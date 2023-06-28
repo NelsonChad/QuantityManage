@@ -1,0 +1,16 @@
+[
+    {
+        "_id": "958f64a9-1af0-45a3-b5c8-b04fa9d0f91a",
+        "colId": "history",
+        "containerId": "",
+        "name": "http://localhost/companymanage/public/api/get-products",
+        "url": "http://localhost/companymanage/public/api/user",
+        "method": "GET",
+        "sortNum": 0,
+        "created": "2023-06-26T22:28:23.457Z",
+        "modified": "2023-06-27T20:13:16.680Z",
+        "headers": [],
+        "params": [],
+        "tests": []
+    }
+]
