@@ -47,4 +47,24 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Products::class);
     }
+
+    public function totalPublications()
+    {
+        return $this->hasMany('App\Models\Publications', 'user_id')
+        ->selectRaw('user_id, SUM(quantity) as total_quantity')
+        ->groupBy('user_id');
+    }
+
+    /*public function publications()
+    {
+        return $this->belongsToMany(Publications::class, 'user_publications');
+    }*/
+
+    public function publications()
+    {
+        return $this->hasMany('App\Models\Publications', 'product_id')
+        ->selectRaw('product_id, quantity, month_id, status')
+        ->orderBy('publications.month_id','asc')
+        ->groupBy('product_id', 'quantity', 'month_id', 'status');
+    }
 }

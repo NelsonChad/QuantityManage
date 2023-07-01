@@ -18,9 +18,11 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+//Route::group(['middleware' => ['auth'], 'namespace' => 'admin', 'prefix' => 'admin'], function () {});
 
 Route::group(['middleware' => ['auth'], 'namespace' => 'admin', 'prefix' => 'admin'], function () {
     Route::get('/association', [App\Http\Controllers\admin\AssociationController::class, 'index'])->name('association');
+    Route::get('/all', [App\Http\Controllers\admin\ReportsController::class, 'getUsersOfProducts'])->name('general.products');
     Route::post('/associate', [App\Http\Controllers\admin\AssociationController::class, 'store'])->name('admin.associate.store');
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -12,7 +12,7 @@
               <input required type="number" class="form-control" id="product-name" :placeholder="'Introduza a quantidade de '+  product.name" v-model="product.quantity">
             </div>
             <br>
-            <div v-if="true" class="row">
+            <div v-if="!this.loading" class="row">
                 <div class="col">
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>

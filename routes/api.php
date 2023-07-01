@@ -17,6 +17,9 @@ use App\Http\Controllers\ManageController;
 Route::get('/get-months', [ManageController::class, 'getMonths']);
 Route::get('/get-products', [ManageController::class, 'getProducts']);
 Route::post('/store-publication', [ManageController::class, 'storePublication']);
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/user-data', [ManageController::class, 'getUserData'])->middleware('auth:api');
+});
 
 /*Route::group(['middleware' => ['auth'], 'namespace' => 'Auth'], function () {
 

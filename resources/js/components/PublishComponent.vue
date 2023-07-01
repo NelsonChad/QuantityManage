@@ -62,12 +62,24 @@
     import ModalComponent from '../components/ModalComponent.vue';
     import PulseLoader from "vue-spinner/src/PulseLoader.vue"; //https://www.npmjs.com/package/vue-spinner
     import axios from 'axios';
+    //import api from '../api';
 
     export default {
     name: "Tests",
     components : {
         ModalComponent,
         PulseLoader
+    },
+    async created() {
+        /*try {
+            // Make an API request to get the authenticated user
+            const response = await api.get('/user-data');
+            user.value = response.data;
+
+            console.log("USER: ",response.data )
+        } catch (error) {
+            console.error(error);
+        }*/
     },
     data() {
         return {

@@ -11,6 +11,7 @@ use App\Models\User;
 
 class ManageController extends Controller
 {
+    public $user_id = 1;
     public function getMonths(){
         try{
             $response = Months::withCount('publications')->orderBy('id','asc')->get();
@@ -25,7 +26,7 @@ class ManageController extends Controller
     public function getProducts(){
         try{
 
-            $user = User::find(2);
+            $user = User::find($this->user_id);
             $response = $user->products()->with('publications')->get(); // with association of Many to Many
             
             if ($response)
@@ -35,10 +36,21 @@ class ManageController extends Controller
         }
     }
 
+    public function getUserData()
+    {
+        $userId = Auth::id();
+        // Fetch other user data as needed
+
+        return response()->json([
+            'user_id' => $userId,
+            // Include other user data in the response
+        ]);
+    }
+
     public function storePublication(Request $request)
     {   //$userId = Auth::user()->id;
-
-       // dd($userId);
+        $userId = $this->user_id;
+        //dd($userId);
         try {
             $data = $request->all();
             
@@ -47,10 +59,15 @@ class ManageController extends Controller
                 $publication->quantity = $produto['quantity'];
                 $publication->month_id = $produto['month_id'];
                 $publication->product_id = $produto['product_id'];
-                $publication->user_id = 2;  // to current user
+                $publication->user_id = $userId;  // to current user
                 $publication->company_id = $produto['company_id'];
     
                 $publication->save();
+                $pubID = $publication['id'];
+
+                //associate
+                $user = User::find($userId);
+                $user->publications()->attach($pubID);
             }
     
             return response()->json(['message' => 'Actualizacao feita com sucesso!', 'status' => true], 200);

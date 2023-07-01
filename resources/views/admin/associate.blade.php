@@ -5,11 +5,10 @@
     <h1>Associate</h1>
     <form method="POST" action="{{ route('admin.associate.store') }}" >
         {!! csrf_field()!!}
-        <div class="form-row">
+        <div class="row">
             <div class="form-group col-md-3">
                 <label for="inputProduct">Produto<span class="required_field">*</span></label>
                 <select class="form-control js-example-basic-single" name="product" id="inputProduct">
-                    
                     @foreach($products as $product)
                     <option value="{{$product->id}}">
                         {{$product->name}}
@@ -22,9 +21,8 @@
                 </span>
                 @endif
             </div>
-          
             <div class="form-group col-md-4">
-                <button type="submit" class="btn btn-success" >Associar</button>
+                <button style="margin-top: 22px;" type="submit" class="btn btn-success" >Associar</button>
             </div>
         </div>
     </form>
