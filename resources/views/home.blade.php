@@ -24,7 +24,7 @@
       </li>
     </ul>
     </div>
+    
   </nav-->
-
     <publish-component></publish-component></div>
 @endsection

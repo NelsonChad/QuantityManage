@@ -25,9 +25,11 @@ class ManageController extends Controller
 
     public function getProducts(){
         try{
-
+            $parameter = $this->user_id;
             $user = User::find($this->user_id);
-            $response = $user->products()->with('publications')->get(); // with association of Many to Many
+            $response = $user->products()->with(['publications' => function ($query) use ($parameter) {
+                $query->where('user_id', $parameter);
+            }])->get(); // with association of Many to Many
             
             if ($response)
                 return response()->json(['products' => $response, 'status' => true], 200);
@@ -65,9 +67,10 @@ class ManageController extends Controller
                 $publication->save();
                 $pubID = $publication['id'];
 
+                //echo "ID: " .$pubID;
                 //associate
-                $user = User::find($userId);
-                $user->publications()->attach($pubID);
+                //$user = User::find($userId);
+                //$user->publications()->attach($pubID);
             }
     
             return response()->json(['message' => 'Actualizacao feita com sucesso!', 'status' => true], 200);

@@ -62,7 +62,7 @@
     import ModalComponent from '../components/ModalComponent.vue';
     import PulseLoader from "vue-spinner/src/PulseLoader.vue"; //https://www.npmjs.com/package/vue-spinner
     import axios from 'axios';
-    //import api from '../api';
+    import api from '../api';
 
     export default {
     name: "Tests",
@@ -71,15 +71,19 @@
         PulseLoader
     },
     async created() {
-        /*try {
+        //const response =  api.get('/sanctum/csrf-cookie');
+        //console.log("USER: ", response)
+        
+        try {
             // Make an API request to get the authenticated user
-            const response = await api.get('/user-data');
-            user.value = response.data;
+            //api.get('/sanctum/csrf-cookie');
+            const response =  api.get('/api/user');
+            var user = response.data;
 
             console.log("USER: ",response.data )
         } catch (error) {
             console.error(error);
-        }*/
+        }
     },
     data() {
         return {
@@ -93,20 +97,20 @@
     methods: {
         getMonths(){
             this.loading = true;
-            axios.get('http://localhost/companymanage/public/api/get-months')
+            api.get('/api/get-months')
             .then((response)=>{
                 this.loading = false;
                 this.months = response.data.months;
-                console.log("RESP: " + JSON.stringify(response.data.months))
+                //console.log("RESP: " + JSON.stringify(response.data.months))
             });
         },
         getProducts(){
             this.loading = true;
-            axios.get('http://localhost/companymanage/public/api/get-products')
+            api.get('/api/get-products')
             .then((response)=>{
                 this.loading = false;
                 this.products = response.data.products
-                console.log("RESP: " + JSON.stringify(response.data.products)) 
+               // console.log("RESP: " + JSON.stringify(response.data.products)) 
             });
         },
       showAddModal(month) {
