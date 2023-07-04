@@ -11,7 +11,7 @@ class Months extends Model
     public function publications()
     {
         return $this->hasMany('App\Models\Publications', 'month_id')
-        ->where('user_id',1) // to current user
+        //->where('user_id',1) // to current user
         ->selectRaw('month_id, quantity, month_id, status')
         ->groupBy('month_id', 'quantity', 'status');
     }

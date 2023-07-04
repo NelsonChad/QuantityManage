@@ -1,9 +1,20 @@
 <template>
     <div class="container">
+
+        <div class="row">
+            <div class="col-5" >
+                <h2>Dados de Produção ({{ currentYear }})</h2>
+            </div>
+            <div v-for="(year, key) in years" :key="key" class="col-1">
+                <button type="button" class="btn btn-secondary" @click="chengeYear(year)">{{ year }}</button>
+            </div>
+        </div>
+        <div style="height: 20px;"></div>
         <div class="d-flex flex-wrap justify-content-center">
             <pulse-loader :loading="this.loading" ></pulse-loader>
         </div>
         <div class="row justify-content-center">
+          
             <table class="table table-bordered">
                 <thead>
                     <tr scope="col"  class="table-secondary">
@@ -27,7 +38,7 @@
                         <td>{{product.unity}}</td>   
                         <td>{{product.quantity}}</td>   
                         <td class="values" v-for="(pub, key) in product.publications" :key="key">    
-                            {{pub.quantity + " ID "+ pub.month_id}}
+                            {{pub.quantity}}
                         </td>  
                     </tr>
                 </tbody>
@@ -38,6 +49,7 @@
         v-if="displayModal"
         :products="products"
         :month="selectedMonth"
+        :user_id="this.user_id"
         @save-product-event="saveProduct"
         @close-modal-event="hideModal"
         ></modal-component>
@@ -70,7 +82,10 @@
         ModalComponent,
         PulseLoader
     },
-    async created() {
+    props: {
+        user_id: Number,
+    },
+    /*async created() {
         //const response =  api.get('/sanctum/csrf-cookie');
         //console.log("USER: ", response)
         
@@ -84,20 +99,27 @@
         } catch (error) {
             console.error(error);
         }
-    },
+    },*/
     data() {
         return {
         selectedMonth: Object,
         response: false,
         months: [],
         products: [],
-        displayModal: false
+        displayModal: false,
+        currentYear: '2023',
+        years : ['2023','2022','2021','2020','2019']
         };
     }, 
     methods: {
+        chengeYear(year){
+            this.currentYear = year;
+        },
         getMonths(){
+            console.log("USER ID: ", this.user_id)
+
             this.loading = true;
-            api.get('/api/get-months')
+            api.get('/api/get-months/'+ this.user_id)
             .then((response)=>{
                 this.loading = false;
                 this.months = response.data.months;
@@ -106,7 +128,7 @@
         },
         getProducts(){
             this.loading = true;
-            api.get('/api/get-products')
+            api.get('/api/get-products/'+ this.user_id)
             .then((response)=>{
                 this.loading = false;
                 this.products = response.data.products

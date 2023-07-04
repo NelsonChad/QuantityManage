@@ -12,9 +12,11 @@ use App\Models\User;
 class ManageController extends Controller
 {
     public $user_id = 1;
-    public function getMonths(){
+    public function getMonths($id){
         try{
-            $response = Months::withCount('publications')->orderBy('id','asc')->get();
+            $response = Months::withCount(['publications' => function ($query) use ($id) {
+                $query->where('user_id', $id);
+            }])->orderBy('id','asc')->get();
             
             if ($response)
                 return response()->json(['months' => $response, 'status' => true], 200);
@@ -23,12 +25,23 @@ class ManageController extends Controller
         }
     }
 
-    public function getProducts(){
+    public function getAllMonths() {
         try{
-            $parameter = $this->user_id;
-            $user = User::find($this->user_id);
-            $response = $user->products()->with(['publications' => function ($query) use ($parameter) {
-                $query->where('user_id', $parameter);
+            $response = Months::orderBy('id','asc')->get();
+
+            if ($response)
+                return response()->json(['months' => $response, 'status' => true], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Falha no sistema ao carrengar!','error' => $e->getMessage(), 'status' => false], 500);
+        }
+    }
+
+    public function getProducts($id){
+        try{
+            //$parameter = $id;
+            $user = User::find($id);
+            $response = $user->products()->with(['publications' => function ($query) use ($id) {
+                $query->where('user_id', $id);
             }])->get(); // with association of Many to Many
             
             if ($response)
@@ -49,9 +62,9 @@ class ManageController extends Controller
         ]);
     }
 
-    public function storePublication(Request $request)
+    public function storePublication(Request $request, $id)
     {   //$userId = Auth::user()->id;
-        $userId = $this->user_id;
+        $userId = $id;
         //dd($userId);
         try {
             $data = $request->all();

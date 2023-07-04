@@ -26,5 +26,6 @@
     </div>
     
   </nav-->
-    <publish-component></publish-component></div>
+    <publish-component :user_id="{{Auth::id()}}"></publish-component>
+  </div>
 @endsection

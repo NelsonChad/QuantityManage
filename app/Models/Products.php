@@ -12,7 +12,7 @@ class Products extends Model
     public function publications()
     {
         return $this->hasMany('App\Models\Publications', 'product_id')
-        ->where('user_id',1) // to current user
+        //->where('user_id',1) // to current user
         ->selectRaw('product_id, quantity, month_id, status')
         ->orderBy('publications.month_id','asc')
         ->groupBy('product_id', 'quantity', 'month_id', 'status');

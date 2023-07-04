@@ -3,13 +3,13 @@
     <div id="form-modal" class="modal-dialog-container">
       <div class="modal-dialog-content">
         <div class="modal-dialog-header">
-          <h4>Registar para o mes de {{ this.month.month }}</h4>
+          <h4>Registar para o mês de {{ this.month.month }}</h4>
         </div>
         <div class="modal-dialog-body">
           <form @submit.prevent="savePub">
             <div class="form-group" v-for="(product, index) in this.products" :key="index">
               <label for="product-name">{{product.name}}</label>
-              <input required type="number" class="form-control" id="product-name" :placeholder="'Introduza a quantidade de '+  product.name" v-model="product.quantity">
+              <input required type="number" class="form-control" id="product-name" :placeholder="'Introduza a quantidade de '+  product.name + ' em '+product.unity" v-model="product.quantity">
             </div>
             <br>
             <div v-if="!this.loading" class="row">
@@ -42,6 +42,7 @@
       props: {
         products: Object,
         month: Object,
+        user_id: Number,
       },
       data() {
         return {
@@ -54,6 +55,9 @@
        
       },
       methods: {
+        chengeYear(year){
+            this.currentYear = year;
+        },
         closeModal() {
             console.log("Closing")
             this.$emit('close-modal-event');
@@ -76,7 +80,7 @@
           });
 
           console.log("LL: "+ JSON.stringify(this.publications))
-          axios.post('http://localhost/companymanage/public/api/store-publication', this.publications)
+          axios.post('http://localhost/companymanage/public/api/store-publication/'+this.user_id, this.publications)
             .then((response)=>{
                 this.loading = false;
 

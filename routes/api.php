@@ -14,11 +14,16 @@ use App\Http\Controllers\ManageController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('/get-months', [ManageController::class, 'getMonths']);
-Route::get('/get-products', [ManageController::class, 'getProducts']);
-Route::post('/store-publication', [ManageController::class, 'storePublication']);
+Auth::routes();
+Route::get('/get-months/{id}', [ManageController::class, 'getMonths']);
+Route::get('/get-allmonths', [ManageController::class, 'getAllMonths']);
+Route::get('/get-products/{id}', [ManageController::class, 'getProducts']);
+Route::post('/store-publication/{id}', [ManageController::class, 'storePublication']);
+Route::get('/get-allpublications', [App\Http\Controllers\ReportsController::class, 'getUsersOfProducts']);
+Route::get('/get-publications/{user_id}/{product_id}', [App\Http\Controllers\ReportsController::class, 'getPublications']);
 
-//Auth::routes();
+
+
 
 Route::middleware('auth')->get('/user', function (Request $request) {
     return $request->user();

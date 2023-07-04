@@ -18,10 +18,12 @@ const app = createApp({});
 import ExampleComponent from './components/ExampleComponent.vue';
 import PublishComponent from './components/PublishComponent.vue';
 import ModalComponent from './components/ModalComponent.vue';
+import PublicationsComponent from './components/AllPublications.vue';
 
 app.component('example-component', ExampleComponent);
 app.component('publish-component', PublishComponent);
 app.component('modal-component', ModalComponent);
+app.component('publications-component', PublicationsComponent);
 
 
 
