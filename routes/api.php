@@ -15,12 +15,13 @@ use App\Http\Controllers\ManageController;
 |
 */
 Auth::routes();
-Route::get('/get-months/{id}', [ManageController::class, 'getMonths']);
+Route::get('/get-months/{id}/{year}', [ManageController::class, 'getMonths']);
+Route::get('/get-years', [ManageController::class, 'getYears']);
 Route::get('/get-allmonths', [ManageController::class, 'getAllMonths']);
-Route::get('/get-products/{id}', [ManageController::class, 'getProducts']);
+Route::get('/get-products/{id}/{year}', [ManageController::class, 'getProducts']);
 Route::post('/store-publication/{id}', [ManageController::class, 'storePublication']);
 Route::get('/get-allpublications', [App\Http\Controllers\ReportsController::class, 'getUsersOfProducts']);
-Route::get('/get-publications/{user_id}/{product_id}', [App\Http\Controllers\ReportsController::class, 'getPublications']);
+Route::get('/get-publications/{user_id}/{product_id}/{year}', [App\Http\Controllers\ReportsController::class, 'getPublications']);
 
 
 

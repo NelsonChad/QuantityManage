@@ -5,9 +5,16 @@
                 <h2>Dados de Produção Mensal ({{ currentYear }})</h2>
             </div>
             <div v-for="(year, key) in years" :key="key" class="col-1">
-                <button type="button" class="btn btn-secondary" @click="chengeYear(year)">{{ year }}</button>
+                <button type="button" 
+                    class="btn btn-f" 
+                    :style="{'background-color': activeButton === key ? this.bcolor : '#5C636A'}"
+                    @click="chengeYear(year, key)">
+                    {{ year.year }}
+                </button>
             </div>
         </div>
+        <hr>
+
         <div style="height: 20px;"></div>
         <div class="d-flex flex-wrap justify-content-center" v-if="this.loading">
             Carregando Publicações <pulse-loader :loading="this.loading" ></pulse-loader>
@@ -16,12 +23,10 @@
             <table class="table table-bordered table-hover">
                 <thead class="thead-light">
                     <tr>
-                        <th>{{product.name}}</th>
+                        <th width="200" class="thProd">{{product.name}} ({{product.unity}})</th>
                         <th>Total Anual {{product.created_at}}</th>
-                        <th class="toFor" v-for="(month, key) in months" :key="key">
-                            <span class="badge bg-primary spn">                           
-                                <div class="months">{{month.month}}</div>
-                            </span>
+                        <th width="83" class="thFor" v-for="(month, key) in months" :key="key">                           
+                            <div class="months">{{month.month}}</div>
                         </th>
                         <!--th class="text-center" colspan="3" style="width:15%">Acções</th-->
                     </tr>
@@ -30,8 +35,7 @@
                     <tr v-for="(companies, key) in product.users" :key="key">
                         <td>{{companies.name }}</td>
                         <td></td>
-                        <td v-for="(pubs, key) in companies.publications" :key="key">
-                            
+                        <td v-for="(pubs, key) in companies.publications" :key="key"> 
                             <b>{{ pubs.quantity }}</b>
                         </td>      
                     </tr>
@@ -59,33 +63,53 @@ export default {
         Swal
       },
       mounted() {
-        this.getPublications();
-        this.getMonths()
+        this.getYear()
       },
       data() {
         return {
+          activeButton: 0,
+          bcolor: "#039BE5",
           loading: false,
           productsCompanies: [],
           months: [],
           rows: [],
           //currentYear: currentDate.getFullYear(),
           currentYear: '2023',
-          years : ['2023','2022','2021','2020','2019']
+          years : []
         }
       },
       computed: {
        
       },
       methods: {
-        chengeYear(year){
-            this.currentYear = year;
+        chengeYear(year, index){
+            this.activeButton = index;
+            this.bcolor = '#039BE5';
+            this.year = year
+            this.currentYear = year.year;
+            this.getMonths(year.id);
+            this.getPublications(year.id)
         },
-        getMonths(){
+        getMonths(year){
+            console.log("USER ID: ", this.user_id)
             this.loading = true;
-            api.get('/api/get-allmonths')
+            api.get('/api/get-months/'+ this.user_id+'/'+year)
             .then((response)=>{
                 this.loading = false;
                 this.months = response.data.months;
+            });
+        },
+        getYear(){
+            this.loading = true;
+            api.get('/api/get-years')
+            .then((response)=>{
+                this.loading = false;
+                this.years = response.data.years;
+                this.year = this.years[0]
+                this.getMonths(this.year.id)
+                this.getPublications()
+                console.log("SELECTED YEAR: "+ this.year.year)
+
             });
         },
         getPublications(){
@@ -121,7 +145,7 @@ export default {
 
         },
        async getEachPublication(user_id, product_id){
-            var response = await api.get('/api/get-publications/'+user_id+"/"+product_id);
+            var response = await api.get('/api/get-publications/'+user_id+"/"+product_id+"/"+this.year.id);
             console.log("PUB PER PRODUCT: " + JSON.stringify(response.data.publicationsProduct)) 
 
             return response.data.publicationsProduct;
@@ -139,10 +163,24 @@ export default {
     }
 </script>
 <style scoped>
-.spn {
-    width: 70px;
-}
-.month {
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .thFor{
+        background-color: #5c636a;
+        color: #ffff;
+    }
+    .thProd{
+        background-color: #e6eaee;
+    }
+    .btn-f{
+        color: white;
+    }
+    .spn {
+        width: 70px;
+    }
+    .month {
         color: blue;
     }
     .title {

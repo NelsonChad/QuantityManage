@@ -2,11 +2,16 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-5" >
+            <div class="col-4" >
                 <h2>Dados de Produção ({{ currentYear }})</h2>
             </div>
             <div v-for="(year, key) in years" :key="key" class="col-1">
-                <button type="button" class="btn btn-secondary" @click="chengeYear(year)">{{ year }}</button>
+                <button type="button" 
+                    class="btn btn-f" 
+                    :style="{'background-color': activeButton === key ? this.bcolor : '#5C636A'}"
+                    @click="chengeYear(year, key)">
+                    {{ year.year }}
+                </button>
             </div>
         </div>
         <div style="height: 20px;"></div>
@@ -50,16 +55,20 @@
         :products="products"
         :month="selectedMonth"
         :user_id="this.user_id"
+        :year = year
         @save-product-event="saveProduct"
         @close-modal-event="hideModal"
         ></modal-component>
     </div>
 </template>
 <style scoped>
-.spn {
-    width: 70px;
-}
-.month {
+    .btn-f{
+        color: white;
+    }
+    .spn {
+        width: 70px;
+    }
+    .month {
         color: blue;
     }
     .title {
@@ -85,21 +94,6 @@
     props: {
         user_id: Number,
     },
-    /*async created() {
-        //const response =  api.get('/sanctum/csrf-cookie');
-        //console.log("USER: ", response)
-        
-        try {
-            // Make an API request to get the authenticated user
-            //api.get('/sanctum/csrf-cookie');
-            const response =  api.get('/api/user');
-            var user = response.data;
-
-            console.log("USER: ",response.data )
-        } catch (error) {
-            console.error(error);
-        }
-    },*/
     data() {
         return {
         selectedMonth: Object,
@@ -108,27 +102,46 @@
         products: [],
         displayModal: false,
         currentYear: '2023',
-        years : ['2023','2022','2021','2020','2019']
+        year: {},
+        activeButton: 0,
+        bcolor: "#039BE5",
         };
     }, 
     methods: {
-        chengeYear(year){
-            this.currentYear = year;
-        },
-        getMonths(){
-            console.log("USER ID: ", this.user_id)
+        chengeYear(year, index){
+            this.activeButton = index;
+            this.bcolor = '#039BE5';
+            this.year = year
+            this.currentYear = year.year;
+            this.getMonths(year.id);
+            this.getProducts(year.id)
 
+        },
+        getMonths(year){
+            console.log("USER ID: ", this.user_id)
             this.loading = true;
-            api.get('/api/get-months/'+ this.user_id)
+            api.get('/api/get-months/'+ this.user_id+'/'+year)
             .then((response)=>{
                 this.loading = false;
                 this.months = response.data.months;
-                //console.log("RESP: " + JSON.stringify(response.data.months))
             });
         },
-        getProducts(){
+        getYear(){
             this.loading = true;
-            api.get('/api/get-products/'+ this.user_id)
+            api.get('/api/get-years')
+            .then((response)=>{
+                this.loading = false;
+                this.years = response.data.years;
+                this.year = this.years[0]
+                this.getMonths(this.year.id)
+                this.getProducts(this.year.id)
+                console.log("SELECTED YEAR: "+ this.year.year)
+
+            });
+        },
+        getProducts(year){
+            this.loading = true;
+            api.get('/api/get-products/'+ this.user_id+'/'+year)
             .then((response)=>{
                 this.loading = false;
                 this.products = response.data.products
@@ -141,14 +154,13 @@
         this.displayModal = true;
       },
       hideModal() {
-        this.getProducts();
-        this.getMonths();
+        this.getProducts(this.year.id);
+        this.getMonths(this.year.id);
         this.displayModal = false;
       },
     },
     mounted() {
-        this.getMonths()
-        this.getProducts()
+        this.getYear()
         console.log('Component mounted.')
     }
 }

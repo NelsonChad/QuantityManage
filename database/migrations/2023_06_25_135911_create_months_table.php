@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('moths', function (Blueprint $table) {
+        Schema::create('months', function (Blueprint $table) {
             $table->id();
-            $table->string('moth');
-            $table->double('moth_number')->unsigned();
+            $table->string('month');
+            $table->double('month_number')->unsigned();
             $table->string('description')->nullable();
             $table->string('status')->default(true);
             $table->timestamps();

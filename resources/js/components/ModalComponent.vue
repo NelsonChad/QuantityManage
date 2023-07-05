@@ -3,7 +3,7 @@
     <div id="form-modal" class="modal-dialog-container">
       <div class="modal-dialog-content">
         <div class="modal-dialog-header">
-          <h4>Registar para o mês de {{ this.month.month }}</h4>
+          <h4>Registar para o mês de {{ this.month.month }} de {{ year.year }}</h4>
         </div>
         <div class="modal-dialog-body">
           <form @submit.prevent="savePub">
@@ -43,6 +43,7 @@
         products: Object,
         month: Object,
         user_id: Number,
+        year: Object
       },
       data() {
         return {
@@ -65,6 +66,7 @@
         savePub() {
           //'quantity', 'month_id', 'product_id', 'company_id', 'user_id',
           this.loading = true;
+          console.log("YEAR ID: "+ this.year.id)
      
           this.products.forEach((prod) => {
             console.log(prod.quantity +" "+prod.id);
@@ -72,6 +74,7 @@
               quantity: prod.quantity,
               month_id: this.month.id,
               product_id: prod.id,
+              year_id: this.year.id,
               company_id: 1
             };
 

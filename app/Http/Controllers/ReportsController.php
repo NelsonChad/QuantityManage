@@ -22,11 +22,12 @@ class ReportsController extends Controller
         }
     }
 
-    public function getPublications($user_id, $product_id) {
+    public function getPublications($user_id, $product_id, $year_id) {
         try{
             $publicationsProduct = Publications::
             where('user_id', $user_id)
             ->where('product_id', $product_id)
+            ->where('year_id', $year_id)
             ->get();
             
             if ($publicationsProduct)
