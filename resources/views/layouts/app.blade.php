@@ -38,8 +38,8 @@
                           <a class="nav-link" href="#">Relatorios<span class="sr-only">(current)</span></a>
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{route('association')}}">Cadastrar</a>
-                          </li>
+                            <a class="nav-link" href="{{route('admin.manage')}}">Gerir <i class="fa fa-cog"></i></a>
+                        </li>
                       </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -52,11 +52,6 @@
                                 </li>
                             @endif
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
                         @else
                         
                             <li class="nav-item dropdown">

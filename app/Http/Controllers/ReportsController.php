@@ -22,6 +22,29 @@ class ReportsController extends Controller
         }
     }
 
+    public function getTotalProducPerMonth($product, $year){
+        
+        try{
+            $totalPerMoth = [];
+            $months = Months::orderBy('id','asc')->get();
+            foreach ($months as $moth) {
+                $total = Publications::where("product_id", $product)
+                ->where("product_id", $product)
+                ->where("month_id", $moth->id)
+                ->where("year_id", $year)
+                ->sum('quantity');
+
+                array_push($totalPerMoth, $total);  
+            }
+
+            
+            if ($totalPerMoth)
+                return response()->json(['total_moths' => $totalPerMoth], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Falha no sistema ao carrengar!','error' => $e->getMessage(), 'status' => false], 500);
+        }
+    }
+
     public function getPublications($user_id, $product_id, $year_id) {
         try{
             $publicationsProduct = Publications::

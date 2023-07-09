@@ -24,8 +24,8 @@
                 <thead class="thead-light">
                     <tr>
                         <th width="200" class="thProd">{{product.name}} ({{product.unity}})</th>
-                        <th>Total Anual {{product.created_at}}</th>
-                        <th width="83" class="thFor" v-for="(month, key) in months" :key="key">                           
+                        <th class="thYear">Total Anual {{product.created_at}}</th>
+                        <th class="thFor" v-for="(month, key) in months" :key="key" :class="{ filled: isAllColumnsFilled && isColumnFilled(month.month) }">  
                             <div class="months">{{month.month}}</div>
                         </th>
                         <!--th class="text-center" colspan="3" style="width:15%">Acções</th-->
@@ -34,15 +34,17 @@
                 <tbody>
                     <tr v-for="(companies, key) in product.users" :key="key">
                         <td>{{companies.name }}</td>
-                        <td></td>
+                        <td><b>{{ companies.total_qtd }}</b></td>
                         <td v-for="(pubs, key) in companies.publications" :key="key"> 
                             <b>{{ pubs.quantity }}</b>
                         </td>      
                     </tr>
                     <tr>
-                        <td><b>Total Mensal</b></td>
-                        <td></td>
-                        <td></td>
+                        <td class="totals"><b>Total</b></td>
+                        <td class="totals"><b>{{ product.perYearsTotal }}</b></td>
+                        <td class="totals" v-for="(total, key) in product.total_per_moths[0]" :key="key"> 
+                            <b v-if="total != 0">{{ total  }}</b>
+                        </td> 
                     </tr>
                 </tbody>
             </table>
@@ -73,13 +75,26 @@ export default {
           productsCompanies: [],
           months: [],
           rows: [],
+          totalPerMonths: [],
           //currentYear: currentDate.getFullYear(),
           currentYear: '2023',
           years : []
         }
       },
       computed: {
-       
+        isAllColumnsFilled() {
+            const headerColumns = this.months.map(month => month.month);
+            const dataColumns = this.productsCompanies.flatMap(company => {
+            return company.users.flatMap(user => {
+                return user.publications.map(pub => {
+                return pub.month;
+                });
+            });
+            });
+
+            const uniqueColumns = [...new Set([...headerColumns, ...dataColumns])];
+            return uniqueColumns.every(column => dataColumns.includes(column));
+        }
       },
       methods: {
         chengeYear(year, index){
@@ -114,41 +129,57 @@ export default {
         },
         getPublications(){
             this.loading = true;
+            var total_year = 0;
+
             api.get('/api/get-allpublications')
             .then((response)=>{
                 this.loading = false;
                 this.productsCompanies = response.data.publications
-               //console.log("RESP publications: " + JSON.stringify(response.data.publications)) 
+                this.productsCompanies.forEach((async product =>{
+                    product.perYearsTotal = 0
+                    var yearsTotal = 0;
+                    product.total_per_moths = []
 
-                this.productsCompanies.forEach((company =>{
-                    //console.log("PRODUCT: " + JSON.stringify(item.users)) 
-
-                    company.users.forEach((async user =>{
-                        //console.log("USER: " + JSON.stringify(user)) 
+                    product.users.forEach((async (user, j) =>{
+                        var total_year = 0;
                         user.publications = []
-                        await this.getEachPublication(user.id, company.id)
+                        user.total_qtd = 0
+                        await this.getEachPublication(user.id, product.id)
                         .then((response)=>{
-                            response.forEach((async pub =>{
+
+                            response.forEach((async (pub, index)  =>{
                                 if( user.id == pub.user_id){
+                                    total_year += parseInt(pub.quantity)
+
                                     user.publications.push(pub)
+                                    user.total_qtd = total_year // total per year
                                 }
+                                yearsTotal +=  response[index].quantity // all total of year 
                             }));
-
-                        });
+                        })
+                        product.perYearsTotal = yearsTotal // to see
+                        //console.log("ARRAY 2 "+tpm)
+                      
                     }));
+                    var tpm = await this.getTotalProducPerMonth(product.id)
+                        await product.total_per_moths.push(JSON.parse(tpm))  
                 }));
-
-
             });
-
-            
-
         },
-       async getEachPublication(user_id, product_id){
+        async getEachPublication(user_id, product_id){
             var response = await api.get('/api/get-publications/'+user_id+"/"+product_id+"/"+this.year.id);
-            console.log("PUB PER PRODUCT: " + JSON.stringify(response.data.publicationsProduct)) 
-
+            //console.log("PUB PER PRODUCT: " + JSON.stringify(response.data.publicationsProduct)) 
+ 
             return response.data.publicationsProduct;
+        },
+        async getTotalProducPerMonth(product_id){
+            console.log('PRODUCT/'+product_id+"/"+this.year.id)
+
+            var response = await api.get('/api/total-months/'+product_id+"/"+this.year.id);
+            var total = response.data.total_moths;
+            //console.log("ARRAY 1 "+JSON.stringify(total) )
+           
+            return JSON.stringify(total);
         },
         showAlert(title, text, more, type){
             Swal.fire({
@@ -167,9 +198,20 @@ export default {
         text-align: center;
         vertical-align: middle;
     }
+
+    .totals {
+        background-color: #e6eaee;
+    }
+    .filled {
+        background-color: yellow;
+    }
     .thFor{
         background-color: #5c636a;
         color: #ffff;
+    }
+    .thYear {
+        background-color: #c9caca;
+
     }
     .thProd{
         background-color: #e6eaee;
